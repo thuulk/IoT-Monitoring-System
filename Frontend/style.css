@@ -1,0 +1,234 @@
+:root {
+    --celeste: #8ECAE6;
+    --azul: #219EBC;
+    --azulOscuro: #023047;
+    --amarillo: #FFB703;
+    --naranja: #FB8500;
+    --blanco: #ffffff;
+}
+
+/* ===== BASE ===== */
+html {
+    font-size: 62.5%;
+    box-sizing: border-box;
+}
+
+*, *:before, *:after {
+    box-sizing: inherit;
+}
+
+/* ===== ESTILO GENERAL ===== */
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    margin: 0;
+}
+
+header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 1rem 2rem;
+    display: flex;
+    text-align: left;
+    z-index: 10;
+}
+
+/* ===== LOGIN ===== */
+.login-page {
+    background: linear-gradient(135deg, var(--azulOscuro), var(--azul));
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.login-container {
+    background-color: var(--blanco);
+    padding: 3rem;
+    border-radius: 1.5rem;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    width: 300px;
+    text-align: center;
+    justify-content: center;
+}
+
+/* ===== DASHBOARD ===== */
+.dashboard-page {
+    background: linear-gradient(135deg, var(--azulOscuro), var(--azul));
+    color: var(--blanco);
+    padding: 2rem;
+    font-family: Arial, Helvetica, sans-serif;
+    margin: 0;
+    height: 100vh;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ===== NAVBAR ===== */
+nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: var(--blanco);
+    color: var(--azulOscuro);
+    padding: 1rem 2rem;
+    border-top-left-radius: 1.5rem;
+    border-top-right-radius: 1.5rem;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    margin: 4rem 2rem 0 2rem; /* margen solo arriba y laterales */
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+.nav-links p {
+    margin: 0;
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 600;
+}
+
+.nav-links p.activo {
+    background-color: var(--azul);
+    color: var(--blanco);
+}
+
+.nav-links p:not(.activo) {
+    background-color: transparent;
+    color: var(--azulOscuro);
+}
+
+.nav-links p:hover {
+    background-color: rgba(2, 48, 71, 0.1);
+}
+
+/* ===== BOTÓN CERRAR SESIÓN ===== */
+.logout-btn {
+    background-color: var(--naranja);
+    color: var(--blanco);
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.logout-btn:hover {
+    background-color: var(--amarillo);
+    color: var(--azulOscuro);
+}
+
+/* ===== CONTENEDOR PRINCIPAL ===== */
+.container {
+    background-color: var(--blanco);
+    color: var(--azulOscuro);
+    padding: 3rem;
+    margin: 0 2rem 2rem 2rem; /* pegado al nav (sin margen superior) */
+    border-bottom-left-radius: 1.5rem;
+    border-bottom-right-radius: 1.5rem;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    overflow-y: auto;
+}
+
+h2 {
+    color: var(--azulOscuro);
+    margin-bottom: 2rem;
+}
+
+input {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+    border: 2px solid var(--celeste);
+    border-radius: 8px;
+    font-size: 1rem;
+}
+
+input:focus {
+    outline: none;
+    border-color: var(--azul);
+}
+
+button {
+    width: 100%;
+    padding: 10px;
+    background-color: var(--naranja);
+    color: var(--blanco);
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: var(--amarillo);
+    color: var(--azulOscuro);
+}
+
+/* ===== TARJETAS DE GAUGES ===== */
+.dashboard {
+
+}
+
+.gauges-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+    justify-items: center;
+    align-items: center;
+    margin-top: 2rem;
+    padding: 1rem;
+}
+
+.gauge-card {
+    background: var(--blanco);
+    color: var(--azulOscuro);
+    border-radius: 12px;
+    padding: 1rem;
+    width: auto;
+    height: auto;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    max-width: 25rem;
+    max-height: 25rem;
+}
+
+
+
+.gauge-card canvas {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+.gauge-card p {
+    font-weight: bold;
+    font-size: 1rem;
+    margin-top: 0.5rem;
+}
+
+.logo {
+    max-width: 10rem;
+    margin-right: 1rem;
+
+}
+
+.gauges-wrapper {
+    max-width: 120rem;
+    margin: 0 auto;
+    width: 100%;
+}
