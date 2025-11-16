@@ -5,6 +5,7 @@
 #define LED1 D0
 #define LED2 D1
 #define LED3 D2
+#define BUZZER D3
 #define SCLBME280 D5 // GPIO14, cable azul
 #define SDABME280 D6 // GPIO12, cable purpura
 Adafruit_BME280 bme;
@@ -14,7 +15,7 @@ void setup() {
   Serial.begin(115200);
 
   // Cambiar los pines I2C aquí 👇
-  Wire.begin(D6, SCLBME280);  // SDA = GPIO12, SCL = GPIO14 (D5)9
+  Wire.begin(SDABME280, SCLBME280);  
 
   if (!bme.begin(0x76)) {
     Serial.println("No se detecta el BME280");
