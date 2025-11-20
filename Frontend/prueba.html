@@ -1,0 +1,56 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Temperatura en Tiempo Real</title>
+<style>
+body {
+font-family: Arial, sans-serif;
+background-color: #f4f4f9;
+margin: 0;
+padding: 0;
+}
+.container {
+text-align: center;
+padding: 50px;
+}
+h1 {
+color: #333;
+}
+.temperature {
+font-size: 50px;
+color: #ff5733;
+font-weight: bold;
+}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>Temperatura Actual</h1>
+<p class="temperature" id="tempDisplay">Esperando datos...</p>
+</div>
+<script>
+// Crear la conexión WebSocket
+var socket = new WebSocket('ws://localhost:1880/temperatura'); // Usa la URL de tu servidor WebSocket
+// Escuchar mensajes del WebSocket
+socket.onmessage = function(event) {
+var data = JSON.parse(event.data);
+// -------------------------------------
+var temperature = data.temperatura;
+// --------------------------------
+document.getElementById('tempDisplay').innerText = temperature + ' °C';
+};
+socket.onopen = function() {
+console.log("Conexión WebSocket abierta");
+};
+socket.onclose = function() {
+console.log("Conexión WebSocket cerrada");
+};
+socket.onerror = function(error) {
+console.log("Error en WebSocket: " + error);
+};
+</script>
+</body>
+</html>\
