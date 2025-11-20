@@ -1,62 +1,191 @@
 #include <Wire.h>
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BME280.h>
-#define SEALEVELPRESSURE_HPA (1010.80)
-#define LED1 D0
-#define LED2 D1
-#define LED3 D2
-#define BUZZER D3
-#define SCLBME280 D5 // GPIO14, cable azul
-#define SDABME280 D6 // GPIO12, cable purpura
+#include <ESP8266WiFi.h>
+#include <PubSubClient.h>
+#include <ArduinoJson.h>
+#include <PMserial.h>   // <- librería oficial que sí soporta PlatformIO
+
+// -------- CONFIGURACIÓN WIFI --------
+const char* ssid     = "Fernando";
+const char* password = "fercho89";
+
+// -------- CONFIGURACIÓN MQTT --------
+const char* mqttServer = "172.20.10.2";
+const int mqttPort = 1883;
+const char* topic = "sensores/diego";
+
+WiFiClient   espClient;
+PubSubClient client(espClient);
+
+// -------- CONFIGURACIÓN BME280 --------
 Adafruit_BME280 bme;
 
+// -------- CONFIGURACIÓN PMS5003 (PMserial) --------
+// D5 = GPIO14 (RX del ESP ← TX del PMS naranja)
+// D6 = GPIO12 (TX del ESP → RX del PMS amarillo)
+//
+// Constructor recomendado por la librería:
+//   SerialPM pms(PMSx003, RX, TX);
+SerialPM pms(PMSx003, 14, 12);
 
+// -------- VARIABLES GLOBALES --------
+// (mantengo tus tipos uint16_t, solo cambia el origen de los datos)
+uint16_t pm1   = (uint16_t)-1;
+uint16_t pm25  = (uint16_t)-1;
+uint16_t pm10  = (uint16_t)-1;
+
+uint16_t p03   = (uint16_t)-1;
+uint16_t p05   = (uint16_t)-1;
+uint16_t p10   = (uint16_t)-1;  // partículas >= 1.0 µm
+uint16_t p25   = (uint16_t)-1;
+uint16_t p50   = (uint16_t)-1;
+uint16_t p100  = (uint16_t)-1;
+
+
+// -------- CONECTAR WIFI --------
+void setup_wifi() {
+  Serial.println();
+  Serial.print("Conectando a ");
+  Serial.println(ssid);
+
+  WiFi.begin(ssid, password);
+
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+
+  Serial.println("\nWiFi conectado!");
+  Serial.print("IP asignada: ");
+  Serial.println(WiFi.localIP());
+}
+
+// -------- RECONNECT MQTT --------
+void reconnect() {
+  while (!client.connected()) {
+    Serial.print("Intentando conectar al broker MQTT...");
+
+    if (client.connect("ESP8266_SENSORES")) {
+      Serial.println("Conectado!");
+    } else {
+      Serial.print("Fallo, rc=");
+      Serial.print(client.state());
+      Serial.println(" — Reintentando...");
+      delay(2000);
+    }
+  }
+}
+
+// -------- LEER PMS5003 (usando PMserial) --------
+bool leerPMS() {
+  // Dispara la lectura y decodifica el último frame del sensor
+  pms.read();
+
+  // Si no hay medición válida de PM/NC, regresamos false
+  if (!pms.has_particulate_matter() || !pms.has_number_concentration()) {
+    // Si quieres debug más fino:
+    // Serial.print("PMS error status: ");
+    // Serial.println(pms.status);
+    return false;
+  }
+
+  // PM en µg/m³
+  pm1  = pms.pm01;   // PM <= 1.0 µm
+  pm25 = pms.pm25;   // PM <= 2.5 µm
+  pm10 = pms.pm10;   // PM <= 10  µm
+
+  // Conteo de partículas (#/100 cm³), mapeado a tus variables
+  p03  = pms.n0p3;   // >= 0.3 µm
+  p05  = pms.n0p5;   // >= 0.5 µm
+  p10  = pms.n1p0;   // >= 1.0 µm
+  p25  = pms.n2p5;   // >= 2.5 µm
+  p50  = pms.n5p0;   // >= 5.0 µm
+  p100 = pms.n10p0;  // >= 10  µm
+
+  Serial.println("----- Datos PMS5003 (PMserial) -----");
+  Serial.printf("PM1: %u  PM2.5: %u  PM10: %u\n", pm1, pm25, pm10);
+  Serial.printf(
+    "0.3um: %u  0.5um: %u  1.0um: %u  2.5um: %u  5.0um: %u  10um: %u\n",
+    p03, p05, p10, p25, p50, p100
+  );
+
+  return true;
+}
+
+// -------- ENVIAR JSON --------
+void sendSensorData() {
+  float temp = bme.readTemperature();
+  float hum  = bme.readHumidity();
+  float pres = bme.readPressure() / 100.0F;
+
+  if (isnan(temp) || isnan(hum) || isnan(pres)) {
+    Serial.println("Error leyendo BME280.");
+    return;
+  }
+
+  // Actualiza valores del PMS (si falla, deja los últimos)
+  leerPMS();
+
+  StaticJsonDocument<350> doc;
+
+  doc["temperatura"] = temp;
+  doc["humedad"]     = hum;
+  doc["presion"]     = pres;
+
+  // PM estándar
+  doc["pm1"]  = pm1;
+  doc["pm25"] = pm25;
+  doc["pm10"] = pm10;
+
+  // Partículas por tamaño
+  doc["p03"]  = p03;
+  doc["p05"]  = p05;
+  doc["p10"]  = p10;   // 1 µm
+  doc["p25"]  = p25;
+  doc["p50"]  = p50;
+  doc["p100"] = p100;
+
+  char buffer[400];
+  serializeJson(doc, buffer);
+
+  if (client.publish(topic, buffer)) {
+    Serial.println("JSON enviado:");
+    Serial.println(buffer);
+  } else {
+    Serial.println("Error enviando JSON.");
+  }
+}
+
+// -------- SETUP --------
 void setup() {
   Serial.begin(115200);
 
-  // Cambiar los pines I2C aquí 👇
-  Wire.begin(SDABME280, SCLBME280);  
+
+  setup_wifi();
+  client.setServer(mqttServer, mqttPort);
+
 
   if (!bme.begin(0x76)) {
-    Serial.println("No se detecta el BME280");
+    Serial.println("ERROR: No se encontró BME280.");
     while (1);
   }
 
-  pinMode(LED1, OUTPUT);
-  pinMode(LED2, OUTPUT);
-  pinMode(LED3, OUTPUT); 
-  //pinMode(LED4, OUTPUT);
-  //pinMode(LED5, OUTPUT);
-  //pinMode(LED6, OUTPUT); // empieza apagado (activo-bajo)
-  digitalWrite(LED1, LOW);
-  digitalWrite(LED2, LOW);
-  digitalWrite(LED3, LOW);
-  //digitalWrite(LED4, LOW);
-  //digitalWrite(LED5, LOW);
-  //digitalWrite(LED6, LOW);
-  
+
+  // Inicializar PMS5003 vía PMserial
+  pms.init();   // configura el puerto serie interno a 9600
+
+  Serial.println("Sensores inicializados correctamente.");
+
 }
 
+// -------- LOOP --------
 void loop() {
-  float t = bme.readTemperature();         // °C
-  float humedad = bme.readHumidity();                // %
-  float presion = bme.readPressure() / 100.0F;       // Pa → hPa
-  float altitud = bme.readAltitude(SEALEVELPRESSURE_HPA); // metros
+  if (!client.connected()) reconnect();
+  client.loop();
 
-  // Mostrar en el monitor serial
-  Serial.print("🌡Temp: ");
-  Serial.print(t);
-  Serial.print(" °C  |  💧 Hum: ");
-  Serial.print(humedad);
-  Serial.print(" %  |  🌬 Presión: ");
-  Serial.print(presion);
-  Serial.print(" hPa  |  🏔 Altitud: ");
-  Serial.print(altitud);
-  Serial.println(" m");
-
+  sendSensorData();
   delay(3000);
 
-  // SE DECLARA EN QUE RANGO SE PRENDERA CADA LED SEGUN LA TEMPERATURA QUE TENGA EL SENSOR
-
-
 }
+
