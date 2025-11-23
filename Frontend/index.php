@@ -24,7 +24,7 @@ if (!isset($_SESSION["username"])) {
           <p class="activo">Inicio</p>
           <p>Historial</p>
       </div>
-      <a href="logout.php"><button class="logout-btn">Cerrar sesión</button></a>
+      <a href="cerrar_sesion.php"><button class="logout-btn">Cerrar sesión</button></a>
     </nav>
   <div class="container">
     <section class="dashboard">
