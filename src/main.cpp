@@ -5,8 +5,8 @@
 #include <PubSubClient.h>
 #include <ArduinoJson.h>
 #include <PMserial.h>
-#include "firmware/include/wifi.h" // rename wifi_example.h or change the include
-#include "firmware/include/mqtt.h" // rename wifi_example.h or change the includ
+#include "include/wifi.h" // rename wifi_example.h or change the include
+#include "include/mqtt.h" // rename wifi_example.h or change the includ
 
 // SET-POINTS
 #define TEMP_MAX 35
