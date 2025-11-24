@@ -4,30 +4,51 @@
 #include <ESP8266WiFi.h>
 #include <PubSubClient.h>
 #include <ArduinoJson.h>
-#include <PMserial.h>   // <- librería oficial que sí soporta PlatformIO
+#include <PMserial.h>
+#include "firmware/include/wifi.h" // rename wifi_example.h or change the include
+#include "firmware/include/mqtt.h" // rename wifi_example.h or change the includ
+
+// SET-POINTS
+#define TEMP_MAX 35
+#define TEMP_MIN 20
+#define HUMID_MAX 30
+#define HUMID_MIN 12
+#define PRESS_MAX 40
+#define PRESS_MIN 25
+#define AIR_MAX 2
+#define AIR_MIN 1
+
+// SENSORS PINS
+#define BME_SCL D1
+#define BME_SDA D2
+#define PMS_RX D3
+#define PMS_TX D4
+
+// ALARMS (OUTPUT-PINS)
+#define GREEN_LED D5
+#define YELLOW_LED D6
+#define RED_LED D7
+#define BUZZER D8
+
 
 // -------- CONFIGURACIÓN WIFI --------
-const char* ssid     = "Fernando";
-const char* password = "fercho89";
+const char* ssid     = WIFI_SSID;
+const char* password = WIFI_PASSWORD;
 
 // -------- CONFIGURACIÓN MQTT --------
 const char* mqttServer = "172.20.10.2";
 const int mqttPort = 1883;
 const char* topic = "sensores/diego";
-
-WiFiClient   espClient;
+WiFiClient espClient;
 PubSubClient client(espClient);
 
-// -------- CONFIGURACIÓN BME280 --------
+// -------- Initializing BME280 I2C ------------
 Adafruit_BME280 bme;
 
-// -------- CONFIGURACIÓN PMS5003 (PMserial) --------
-// D5 = GPIO14 (RX del ESP ← TX del PMS naranja)
-// D6 = GPIO12 (TX del ESP → RX del PMS amarillo)
-//
+// -------- Initiliazing PMS5003 (PMserial) --------
 // Constructor recomendado por la librería:
-//   SerialPM pms(PMSx003, RX, TX);
-SerialPM pms(PMSx003, 14, 12);
+// SerialPM pms(PMSx003, RX, TX);
+SerialPM pms(PMSx003, D2, D3);
 
 // -------- VARIABLES GLOBALES --------
 // (mantengo tus tipos uint16_t, solo cambia el origen de los datos)
@@ -157,24 +178,28 @@ void sendSensorData() {
   }
 }
 
+// ------- ALARMS --------
+void alarms() {
+  if ()
+}
+
 // -------- SETUP --------
 void setup() {
-  Serial.begin(115200);
+  Serial.begin(115200); // inicializando baud rate
 
-
+  // ---- wifi setup ----
   setup_wifi();
   client.setServer(mqttServer, mqttPort);
 
-
-  if (!bme.begin(0x76)) {
+  /// ---- bme setup ----
+  if (!bme.begin(0x76)) { // caso: direccion de memoria del bme no encontrada
     Serial.println("ERROR: No se encontró BME280.");
     while (1);
   }
+  Wire.begin(BME_SDA, BME_SCL); // SDA, SCL
 
-
-  // Inicializar PMS5003 vía PMserial
+  // ---- PMS5003 setup vía PMserial ----
   pms.init();   // configura el puerto serie interno a 9600
-
   Serial.println("Sensores inicializados correctamente.");
 
 }
