@@ -1,3 +1,6 @@
+/* =======================================
+   VARIABLES (COLORES PRINCIPALES)
+======================================= */
 :root {
     --celeste: #8ECAE6;
     --azul: #219EBC;
@@ -7,7 +10,9 @@
     --blanco: #ffffff;
 }
 
-/* ===== BASE ===== */
+/* =======================================
+   BASE GENERAL
+======================================= */
 html {
     font-size: 62.5%;
     box-sizing: border-box;
@@ -17,7 +22,6 @@ html {
     box-sizing: inherit;
 }
 
-/* ===== ESTILO GENERAL ===== */
 body {
     font-family: Arial, Helvetica, sans-serif;
     margin: 0;
@@ -34,7 +38,9 @@ header {
     z-index: 10;
 }
 
-/* ===== LOGIN ===== */
+/* =======================================
+   LOGIN PAGE
+======================================= */
 .login-page {
     background: linear-gradient(135deg, var(--azulOscuro), var(--azul));
     height: 100vh;
@@ -50,16 +56,47 @@ header {
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
     width: 300px;
     text-align: center;
-    justify-content: center;
 }
 
-/* ===== DASHBOARD ===== */
+.login-container input {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+    border: 2px solid var(--celeste);
+    border-radius: 8px;
+    font-size: 1rem;
+}
+
+.login-container input:focus {
+    outline: none;
+    border-color: var(--azul);
+}
+
+.login-container button {
+    width: 100%;
+    padding: 10px;
+    background-color: var(--naranja);
+    color: var(--blanco);
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.login-container button:hover {
+    background-color: var(--amarillo);
+    color: var(--azulOscuro);
+}
+
+/* =======================================
+   DASHBOARD PAGE
+======================================= */
 .dashboard-page {
     background: linear-gradient(135deg, var(--azulOscuro), var(--azul));
     color: var(--blanco);
     padding: 2rem;
-    font-family: Arial, Helvetica, sans-serif;
-    margin: 0;
     height: 100vh;
     background-repeat: no-repeat;
     background-attachment: fixed;
@@ -67,7 +104,9 @@ header {
     flex-direction: column;
 }
 
-/* ===== NAVBAR ===== */
+/* =======================================
+   NAVBAR
+======================================= */
 nav {
     display: flex;
     align-items: center;
@@ -78,7 +117,7 @@ nav {
     border-top-left-radius: 1.5rem;
     border-top-right-radius: 1.5rem;
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
-    margin: 4rem 2rem 0 2rem; /* margen solo arriba y laterales */
+    margin: 4rem 2rem 0 2rem;
 }
 
 .nav-links {
@@ -110,7 +149,9 @@ nav {
     background-color: rgba(2, 48, 71, 0.1);
 }
 
-/* ===== BOTÓN CERRAR SESIÓN ===== */
+/* =======================================
+   BOTÓN CERRAR SESIÓN
+======================================= */
 .logout-btn {
     background-color: var(--naranja);
     color: var(--blanco);
@@ -127,18 +168,23 @@ nav {
     color: var(--azulOscuro);
 }
 
-/* ===== CONTENEDOR PRINCIPAL ===== */
+/* =======================================
+   CONTENEDOR PRINCIPAL
+======================================= */
 .container {
     background-color: var(--blanco);
     color: var(--azulOscuro);
     padding: 3rem;
-    margin: 0 2rem 2rem 2rem; /* pegado al nav (sin margen superior) */
+    margin: 0 2rem 2rem 2rem;
     border-bottom-left-radius: 1.5rem;
     border-bottom-right-radius: 1.5rem;
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
     overflow-y: auto;
 }
 
+/* =======================================
+   TITULOS, INPUTS, BOTONES GENERALES
+======================================= */
 h2 {
     color: var(--azulOscuro);
     margin-bottom: 2rem;
@@ -176,11 +222,9 @@ button:hover {
     color: var(--azulOscuro);
 }
 
-/* ===== TARJETAS DE GAUGES ===== */
-.dashboard {
-
-}
-
+/* =======================================
+   TARJETAS GAUGES
+======================================= */
 .gauges-container {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -208,12 +252,15 @@ button:hover {
     max-height: 25rem;
 }
 
-
-
 .gauge-card canvas {
-    width: 100% !important;
-    height: 100% !important;
+    max-width: 180px !important;
+    max-height: 180px !important;
+    width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
 }
+
 
 .gauge-card p {
     font-weight: bold;
@@ -221,14 +268,24 @@ button:hover {
     margin-top: 0.5rem;
 }
 
+/* =======================================
+   LOGO
+======================================= */
 .logo {
     max-width: 10rem;
     margin-right: 1rem;
-
 }
 
+/* =======================================
+   WRAPPER GAUGES
+======================================= */
 .gauges-wrapper {
     max-width: 120rem;
     margin: 0 auto;
     width: 100%;
 }
+.gauges-container {
+    max-width: 100rem;
+    margin: 0 auto;
+}
+
