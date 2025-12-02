@@ -236,10 +236,11 @@ button:hover {
 .gauges-container {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 1rem;
+    row-gap: 4rem;
+    column-gap: 2rem;
     justify-items: center;
     align-items: center;
-    margin-top: 2rem;
+    margin-top: 10rem;
     padding: 1rem;
 }
 
@@ -293,7 +294,7 @@ button:hover {
     width: 100%;
 }
 .gauges-container {
-    max-width: 100rem;
+    max-width: 70rem;
     margin: 0 auto;
 }
 
@@ -326,6 +327,7 @@ h2 {
 
 .subtitulo{
     font-size: 1.5rem;
+    margin-bottom: 5rem;
 }
 a {
     text-decoration: none !important;
@@ -346,4 +348,15 @@ a {
         padding: 8px;
         white-space: nowrap;      /* evita que se rompan las filas */
     }
+}
+/* Dentro de la etiqueta <style> */
+.gauge-card {
+    /* Propiedades existentes, ej.: */
+    /* width: 220px; */
+    /* padding: 15px; */
+
+    /* ===== NUEVO: ESCALADO ===== */
+    transform: scale(1.1); /* Hace la tarjeta 20% más grande */
+    transform-origin: center center; /* Asegura que escale desde el centro */
+    transition: transform 0.3s ease; /* Transición suave opcional */
 }

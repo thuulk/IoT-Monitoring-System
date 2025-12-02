@@ -14,7 +14,6 @@ if (!isset($_SESSION["username"])) {
   <link rel="stylesheet" href="style.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-  <!-- ====== MODALES MEJORADOS ====== -->
   <style>
 
     /* --- Fondo borroso + animación --- */
@@ -167,17 +166,26 @@ if (!isset($_SESSION["username"])) {
 
       <div class="gauge-card" id="card-air">
         <canvas id="airGauge"></canvas>
-        <p>Calidad del Aire (ppm)</p>
+        <p>Calidad del Aire pm1 (μg/m³)</p>
         <button class="setpoint-btn" onclick="setSetpoint('air')">Setpoint</button>
+      </div>
+
+      <div class="gauge-card" id="card-co2">
+        <canvas id="co2Gauge"></canvas>
+        <p>CO2 (ppm)</p>
+        <button class="setpoint-btn" onclick="setSetpoint('co2')">Setpoint</button>
+      </div>
+
+      <div class="gauge-card" id="card-tvoc">
+        <canvas id="tvocGauge"></canvas>
+        <p>TVOC (ppb)</p>
+        <button class="setpoint-btn" onclick="setSetpoint('tvoc')">Setpoint</button>
       </div>
 
     </div>
   </section>
 </div>
 
-<!-- ================== MODALES ================== -->
-
-<!-- SETPOINT -->
 <div id="setpointBox" class="alert-box">
   <div class="alert-content">
     <h3>⚙ Configurar setpoint</h3>
@@ -197,7 +205,6 @@ if (!isset($_SESSION["username"])) {
   </div>
 </div>
 
-<!-- ALERTA -->
 <div id="alertBox" class="alert-box">
   <div class="alert-content">
     <h3>⚠ ALARMA ACTIVADA</h3>
@@ -213,7 +220,6 @@ if (!isset($_SESSION["username"])) {
   </div>
 </div>
 
-<!-- REGISTRO -->
 <div id="registroBox" class="alert-box">
   <div class="alert-content">
     <h3>Registrar empleado</h3>
@@ -234,7 +240,6 @@ if (!isset($_SESSION["username"])) {
   </div>
 </div>
 
-<!-- ================= JS ================== -->
 <script>
 let gauges = {};
 let setpointActual = null;
@@ -243,14 +248,20 @@ let setpoints = {
   temp: {min:null, max:null},
   hum:  {min:null, max:null},
   pres: {min:null, max:null},
-  air:  {min:null, max:null}
+  air:  {min:null, max:null},
+  // === NUEVOS SETPOINTS ===
+  co2:  {min:null, max:null},
+  tvoc: {min:null, max:null}
 };
 
 let valores = {
   temperatura: 20,
   humedad: 40,
   presion: 900,
-  calidad: 30
+  calidad: 30,
+  // === NUEVOS VALORES INICIALES ===
+  co2: 450, // Partes por millón
+  tvoc: 100 // Partes por billón
 };
 
 const codigoAlarma = "1234";
@@ -320,7 +331,10 @@ function setSetpoint(type) {
     temp: "Temperatura (°C)",
     hum: "Humedad (%)",
     pres: "Presión (hPa)",
-    air: "Calidad del aire (ppm)"
+    air: "Calidad del aire (ppm)",
+    // === NUEVOS NOMBRES ===
+    co2: "Dióxido de Carbono (ppm)",
+    tvoc: "Compuestos Orgánicos Volátiles (ppb)"
   };
 
   document.getElementById("setpointLabel").innerText = names[type];
@@ -388,22 +402,41 @@ function verificarAlarma(tipo, valor) {
   }
 }
 
-// ========= SIMULACIÓN ===========
+// ========= SIMULACIÓN - INCLUYE CO2 y TVOC ===========
 function simularDatos() {
-  valores.temperatura += Math.random() * 2;
-  valores.humedad += Math.random() * 2;
-  valores.presion += Math.random() * 3;
-  valores.calidad += Math.random() * 4;
+  // Simulación de valores existentes (con rangos más centrados)
+  valores.temperatura += Math.random() * 2 - 1;
+  valores.humedad += Math.random() * 2 - 1;
+  valores.presion += Math.random() * 3 - 1.5;
+  valores.calidad += Math.random() * 4 - 2;
 
+  // === SIMULACIÓN DE CO2 y TVOC ===
+  valores.co2 += Math.random() * 10 - 5;
+  valores.tvoc += Math.random() * 5 - 2.5;
+
+  // Asegurar mínimos (por ejemplo, CO2 no baja de 350)
+  valores.co2 = Math.max(350, valores.co2);
+  valores.tvoc = Math.max(0, valores.tvoc);
+
+  // Actualización de Gauges existentes
   createOrUpdateGauge('tempGauge', valores.temperatura, 50);
   createOrUpdateGauge('humGauge', valores.humedad, 100);
   createOrUpdateGauge('presGauge', valores.presion, 1100);
   createOrUpdateGauge('airGauge', valores.calidad, 500);
 
+  // === ACTUALIZACIÓN DE GAUGES NUEVOS ===
+  createOrUpdateGauge('co2Gauge', valores.co2, 2000); // Máximo de 2000 ppm
+  createOrUpdateGauge('tvocGauge', valores.tvoc, 600); // Máximo de 600 ppb
+
+  // Verificación de Alarma existentes
   verificarAlarma('temp', valores.temperatura);
   verificarAlarma('hum', valores.humedad);
   verificarAlarma('pres', valores.presion);
   verificarAlarma('air', valores.calidad);
+
+  // === VERIFICACIÓN DE ALARMA NUEVAS ===
+  verificarAlarma('co2', valores.co2);
+  verificarAlarma('tvoc', valores.tvoc);
 }
 
 setInterval(simularDatos, 2000);
