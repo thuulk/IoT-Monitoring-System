@@ -37,16 +37,6 @@ struct PMSData {
 
     // ==== PM en µg/m³ ====
     uint16_t pm1  = 0;  // PM <= 1.0 µm
-    uint16_t pm25 = 0;  // PM <= 2.5 µm
-    uint16_t pm10 = 0;  // PM <= 10  µm
-
-    // ==== PARTICLE READINGS (#/100cm³) ====
-    uint16_t p03  = 0;  // >= 0.3 µm
-    uint16_t p05  = 0;  // >= 0.5 µm
-    uint16_t p10  = 0;  // >= 1.0 µm
-    uint16_t p25  = 0;  // >= 2.5 µm
-    uint16_t p50  = 0;  // >= 5.0 µm
-    uint16_t p100 = 0;  // >= 10  µm
 };
 
 enum class AirQuality {
