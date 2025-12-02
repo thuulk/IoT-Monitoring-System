@@ -139,10 +139,10 @@ if (!isset($_SESSION["username"])) {
 
   // ====== WEBSOCKET HACIA NODE-RED ======
   // Asegúrate que tu nodo WebSocket en Node-RED está en:
-  //   ws://<tu-host>:1880/temperatura
+  //   ws://<tu-host>:1880/dashboard
   // y que envía un JSON como:
   //   { "temperatura": 23.5, "humedad": 45.2, "presion": 1013.2 }
-  const socketUrl = 'ws://' + window.location.hostname + ':1880/temperatura';
+  const socketUrl = 'ws://' + window.location.hostname + ':1880/dashboard';
   const socket = new WebSocket(socketUrl);
 
   socket.onopen = function () {
