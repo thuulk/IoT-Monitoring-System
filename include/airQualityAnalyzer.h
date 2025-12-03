@@ -78,21 +78,6 @@ public:
 
         // ==== MASS CONCENTRATION (µg/m³) ====
         data.pm1  = pms.pm01;
-        data.pm25 = pms.pm25; 
-        data.pm10 = pms.pm10;
-
-        // ==== NUMBER CONCENTRATION (solo si está disponible) ====
-        if (pms.has_number_concentration()) {
-            data.p03  = pms.n0p3;
-            data.p05  = pms.n0p5;
-            data.p10  = pms.n1p0;
-            data.p25  = pms.n2p5;
-            data.p50  = pms.n5p0;
-            data.p100 = pms.n10p0;
-        } else {
-            data.p03 = data.p05 = data.p10 = 0;
-            data.p25 = data.p50 = data.p100 = 0;
-        }
 
         data.isValidRead = true;
         return true;
