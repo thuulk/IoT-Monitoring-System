@@ -596,3 +596,22 @@ a {
     transform-origin: center center; /* Asegura que escale desde el centro */
     transition: transform 0.3s ease; /* Transición suave opcional */
 }
+.swal2-confirm {
+    background-color: #FB8500 !important;   /* naranja */
+    color: white !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+.swal2-confirm:hover {
+    background-color: #d66f00 !important;
+}
+.swal2-popup {
+    border-radius: 20px !important;
+}
+.swal2-confirm, .swal2-cancel {
+    border-radius: 12px !important;
+}
+#registroError {
+    z-index: 10000;
+    display: block;
+}
