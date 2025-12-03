@@ -1,4 +1,3 @@
-
 <?php
 session_start();
 if (!isset($_SESSION["username"])) {
@@ -15,6 +14,7 @@ if (!isset($_SESSION["username"])) {
   <link rel="stylesheet" href="style.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+  <!-- ====== MODALES MEJORADOS ====== -->
   <style>
 
     /* --- Fondo borroso + animación --- */
@@ -106,7 +106,7 @@ if (!isset($_SESSION["username"])) {
       background: #6e6e6e;
     }
 
-    /* La clase .alarm se deja por si la necesitas más tarde, pero ya no se usa en JS */
+    /* Alarma */
     .alarm {
       background-color: #ffb4b4 !important;
       box-shadow: 0 0 20px rgba(255, 0, 0, 0.6);
@@ -133,7 +133,7 @@ if (!isset($_SESSION["username"])) {
           Registrar empleado
       </button>
 
-      <a href="cerrar_sesion.php">
+      <a href="logout.php">
         <button class="logout-btn">Cerrar sesión</button>
       </a>
   </div>
@@ -167,7 +167,7 @@ if (!isset($_SESSION["username"])) {
 
       <div class="gauge-card" id="card-air">
         <canvas id="airGauge"></canvas>
-        <p>Calidad del Aire pm1 (μg/m³)</p>
+        <p>Calidad del Aire (ppm)</p>
         <button class="setpoint-btn" onclick="setSetpoint('air')">Setpoint</button>
       </div>
 
@@ -187,6 +187,9 @@ if (!isset($_SESSION["username"])) {
   </section>
 </div>
 
+<!-- ================== MODALES ================== -->
+
+<!-- SETPOINT -->
 <div id="setpointBox" class="alert-box">
   <div class="alert-content">
     <h3>⚙ Configurar setpoint</h3>
@@ -206,6 +209,7 @@ if (!isset($_SESSION["username"])) {
   </div>
 </div>
 
+<!-- ALERTA -->
 <div id="alertBox" class="alert-box">
   <div class="alert-content">
     <h3>⚠ ALARMA ACTIVADA</h3>
@@ -221,6 +225,7 @@ if (!isset($_SESSION["username"])) {
   </div>
 </div>
 
+<!-- REGISTRO -->
 <div id="registroBox" class="alert-box">
   <div class="alert-content">
     <h3>Registrar empleado</h3>
@@ -231,8 +236,7 @@ if (!isset($_SESSION["username"])) {
 
         <label>Contraseña:</label>
         <input type="password" name="password" required>
-<!-- Mensaje de error -->
-        <p id="registroError" style="color:red; font-size:1.4rem; margin-top:5px;"></p>
+
         <div class="modal-buttons">
           <button type="submit">Registrar</button>
           <button type="button" class="cancel" onclick="cerrarRegistro()">Cancelar</button>
@@ -242,21 +246,26 @@ if (!isset($_SESSION["username"])) {
   </div>
 </div>
 
+<!-- ================= JS ================== -->
 <script>
 let gauges = {};
 let setpointActual = null;
 
+// Rango de setpoints (configurable desde modal)
 // URL de Webhook de n8n
 const N8N_WEBHOOK_URL = 'https://bioairsolutions.app.n8n.cloud/webhook/N8nSergioAlertasAutomaticas';
 let setpoints = {
-  temp: {min:null, max:null},
-  hum:  {min:null, max:null},
-  pres: {min:null, max:null},
-  air:  {min:null, max:null},
-  co2:  {min:null, max:null},
-  tvoc: {min:null, max:null}
+
+  temp: {min: null, max: null},
+  hum:  {min: null, max: null},
+  pres: {min: null, max: null},
+  air:  {min: null, max: null},
+  co2:  {min: null, max: null},
+  tvoc: {min: null, max: null}
+
 };
 
+// Valores actuales de los sensores (se actualizan con WebSocket)
 let valores = {
   temperatura: 20,
   humedad: 40,
@@ -273,6 +282,8 @@ let sensorEnAlarma = null; // Mantiene el registro del sensor que causó la alar
 // ========= GAUGES ===========
 function createOrUpdateGauge(id, value, max) {
   const canvas = document.getElementById(id);
+  if (!canvas) return;
+
   const ctx = canvas.getContext('2d');
 
   const percent = (value / max) * 100;
@@ -337,6 +348,7 @@ function setSetpoint(type) {
     air: "Calidad del aire (ppm)",
     co2: "Dióxido de Carbono (ppm)",
     tvoc: "Compuestos Orgánicos Volátiles (ppb)"
+
   };
 
   document.getElementById("setpointLabel").innerText = names[type];
@@ -366,7 +378,7 @@ function cerrarSetpoint() {
   document.getElementById("setpointBox").style.display = "none";
 }
 
-// ========= ALERTA (Visual removida) ===========
+// ========= ALERTA ===========
 function activarAlerta(tipo, valor) {
   if (alarmaActiva) return;
 
@@ -437,8 +449,9 @@ function enviarAlertaAWebhook(sensor, valor) {
 function verificarAlarma(tipo, valor) {
   const sp = setpoints[tipo];
 
-  // Si está fuera de rango MIN y el modal NO está activo, actívalo
-  if (sp.min !== null && valor < sp.min && !alarmaActiva) {
+  if (!sp) return;
+
+  if (sp.min !== null && valor < sp.min) {
     activarAlerta(tipo, valor);
     return;
   }
@@ -450,37 +463,27 @@ function verificarAlarma(tipo, valor) {
   }
 }
 
-// ========= SIMULACIÓN ===========
-function simularDatos() {
-  // Simulación de valores
-  valores.temperatura += Math.random() * 2 - 1;
-  valores.humedad += Math.random() * 2 - 1;
-  valores.presion += Math.random() * 3 - 1.5;
-  valores.calidad += Math.random() * 4 - 2;
-  valores.co2 += Math.random() * 10 - 5;
-  valores.tvoc += Math.random() * 5 - 2.5;
 
-  valores.co2 = Math.max(350, valores.co2);
-  valores.tvoc = Math.max(0, valores.tvoc);
-
-  // Actualización de Gauges
+// ========= ACTUALIZAR GAUGES DESDE VALORES ===========
+function actualizarGaugesDesdeValores() {
+  // Gauges BME
   createOrUpdateGauge('tempGauge', valores.temperatura, 50);
-  createOrUpdateGauge('humGauge', valores.humedad, 100);
-  createOrUpdateGauge('presGauge', valores.presion, 1100);
-  createOrUpdateGauge('airGauge', valores.calidad, 500);
+  createOrUpdateGauge('humGauge',  valores.humedad,     100);
+  createOrUpdateGauge('presGauge', valores.presion,     1100);
+  createOrUpdateGauge('airGauge',  valores.calidad,     500);
   createOrUpdateGauge('co2Gauge', valores.co2, 2000);
   createOrUpdateGauge('tvocGauge', valores.tvoc, 600);
 
-  // Verificación de Alarma
-  verificarAlarma('temp', valores.temperatura);
-  verificarAlarma('hum', valores.humedad);
-  verificarAlarma('pres', valores.presion);
-  verificarAlarma('air', valores.calidad);
-  verificarAlarma('co2', valores.co2);
-  verificarAlarma('tvoc', valores.tvoc);
-}
 
-setInterval(simularDatos, 2000);
+  verificarAlarma('temp', valores.temperatura);
+  verificarAlarma('hum',  valores.humedad);
+  verificarAlarma('pres', valores.presion);
+
+  verificarAlarma('air',  valores.calidad);
+  verificarAlarma('co2',  valores.co2);
+  verificarAlarma('tvoc', valores.tvoc);
+
+}
 
 // ======== REGISTRO EMPLEADO ==========
 function abrirRegistro() {
@@ -491,6 +494,69 @@ function cerrarRegistro() {
     document.getElementById("registroBox").style.display = "none";
 }
 
+// ======== WEBSOCKET (DATOS REALES) ==========
+/*
+  Tu ESP manda un JSON así (según wifi.h):
+
+  {
+    "temperatura": <float>,
+    "humedad":     <float>,
+    "presion":     <float>,
+    "pm1":         <int>,
+    // "co2":      <int>,   // cuando lo actives
+    // "tvoc":     <int>
+  }
+*/
+
+// Ajusta la URL si usas Node-RED:
+// var socket = new WebSocket('ws://' + window.location.hostname + ':1880/dashboard');
+var socket = new WebSocket('ws://' + window.location.hostname + ':1880/dashboard');
+
+socket.onmessage = function(event) {
+  try {
+    var data = JSON.parse(event.data);
+
+    // Mapeo JSON -> objeto valores
+    if (typeof data.temperatura === 'number') {
+      valores.temperatura = data.temperatura;
+    }
+    if (typeof data.humedad === 'number') {
+      valores.humedad = data.humedad;
+    }
+    if (typeof data.presion === 'number') {
+      valores.presion = data.presion;
+    }
+    if (typeof data.pm1 === 'number') {
+      valores.calidad = data.pm1; // calidad del aire basada en pm1
+    }
+
+    // Cuando empieces a mandarlos:
+    if (typeof data.co2 === 'number') {
+      valores.co2 = data.co2;
+    }
+    if (typeof data.tvoc === 'number') {
+      valores.tvoc = data.tvoc;
+    }
+
+    // Actualiza gauges y alarmas con los datos reales
+    actualizarGaugesDesdeValores();
+
+  } catch (e) {
+    console.error("Error parseando mensaje WebSocket:", e, event.data);
+  }
+};
+
+socket.onopen = function() {
+  console.log("Conexión WebSocket abierta");
+};
+
+socket.onclose = function() {
+  console.log("Conexión WebSocket cerrada");
+};
+
+socket.onerror = function(error) {
+  console.log("Error en WebSocket:", error);
+};
 </script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <?php

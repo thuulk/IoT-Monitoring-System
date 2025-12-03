@@ -1,0 +1,45 @@
+[33mfd09a94[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mtest-update[m[33m, [m[1;31morigin/test-update[m[33m)[m Cambios en index y analyzers BME/calidad aire
+[33ma4475d6[m A Merge branch 'test-update'
+[33m7986efd[m Align Frontend with main (exclude Frontend changes from test-update)
+[33m4ff0543[m update
+[33mfba3d2b[m update
+[33m0e1bf58[m super update
+[33m6e1f7ee[m made historial.php responsive for movile
+[33mb3839a3[m added historial.php, and minimal visual changes
+[33m8a02238[m added 2 files, record.php and registro.html, registro.html is unused, just keeping it for reference
+[33m7011e02[m agregue boton de registrar empleado, y cambie el visual de los modal
+[33m6447017[m Agregue boton de setpoint y funcionalidad, agregue alarma de advertencia y simulacion de valores
+[33mc3737ca[m little update
+[33m6fa4dc3[m Refinining headers details and their implementation
+[33m30f80cc[m half-way classes implementation and definition
+[33m06c4440[m implementing PMSreader object for main.cpp
+[33m03a5792[m implementing airQualityAnalyzer.h
+[33m7ae178b[m updating source code main.cpp
+[33m7dcbc60[m little update
+[33m92cd952[m updating .gitignore
+[33md7e89dc[m Remove sensitive include files from Git and apply .gitignore
+[33m56bed9c[m HUGE UPDATE
+[33m1f9c08c[m rewriting a comment from README.md
+[33m3c9df6c[m Merge branch 'main' of https://github.com/thuulk/RETO_TC1004
+[33mdadf648[m adding the new code-workspace file
+[33m0b30f97[m Delete reto_tc1004.code-workspace
+[33m86460e1[m Update README.txt
+[33m2f5cab9[m Add files via upload
+[33m08e419a[m Create README.txt
+[33m97697c8[m Delete Frontend/Database directory
+[33mf6d5ad9[m Create readme.txt
+[33m3adc713[m removing dir server
+[33ma179eff[m prueba html
+[33m27c03b6[m update: sensores y pms5003 funcionando
+[33mcfe57e6[m Merge pull request #3 from thuulk/test-update
+[33m8981a51[m remove platformio.ini from repo
+[33m9ae91c4[m agregue frontend
+[33m8819282[m Merge pull request #2 from thuulk/test-update
+[33mf33559c[m lol
+[33m0174f75[m actualizando los pines de entrada de GPIO al mostrado en la placa del ESP8266
+[33m79aa8a1[m Merge pull request #1 from thuulk/test-update
+[33ma317018[m Actualizacion: platformio.ini modificado para que auto-detecte el puerto del ESP8266
+[33mbc260cc[m Enhance project setup instructions in README
+[33mea76043[m Add setup instructions to README.md
+[33md549a2d[m pulir .gitignore y eliminar archivos auto-generados por IDE
+[33macd9a9f[m Initial commit
