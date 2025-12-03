@@ -17,7 +17,6 @@ struct BMEData {
     float temp;
     float humid;
     float press;
-    float altitude;
     bool isValidRead = false;
 };
 
