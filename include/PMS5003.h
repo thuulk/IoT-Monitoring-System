@@ -1,3 +1,5 @@
+#pragma once
+
 struct pms5003data {
   uint16_t framelen;
   uint16_t pm10_standard, pm25_standard, pm100_standard;

@@ -1,7 +1,4 @@
-#ifndef INCLUDE_CSS811READER_H
-#define INCLUDE_CSS811READER_H
-#define CCS_SCL D3
-#define CCS_SDA D4
+#pragma once
 #include <Arduino.h>
 #include <Adafruit_CCS811.h>
 #include "bmeAnalyzer.h"
@@ -53,6 +50,18 @@ class CCSReader {
         return true;
     }
 
+    [[nodiscard]] bool updateEvery3s(const BMEReader& bme) {
+        static unsigned long last = 0;
+        const unsigned long now = millis();
+
+        if (now - last < 3000) {
+            return false;
+        }
+        last = now;
+
+        return updateData(bme);
+    }
+
     const CCSData& getData() const { return data; }
     [[nodiscard]] bool getStatus() const { return data.isValidRead; }
 
@@ -63,5 +72,3 @@ class CCSReader {
     }
  
 };
-
-#endif

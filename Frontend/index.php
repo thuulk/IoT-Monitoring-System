@@ -167,7 +167,7 @@ if (!isset($_SESSION["username"])) {
 
       <div class="gauge-card" id="card-air">
         <canvas id="airGauge"></canvas>
-        <p>Calidad del Aire (ppm)</p>
+        <p>Calidad del Aire (µg/m³)</p>
         <button class="setpoint-btn" onclick="setSetpoint('air')">Setpoint</button>
       </div>
 
@@ -265,6 +265,15 @@ let setpoints = {
 
 };
 
+const targetMap = {
+  temp: "temperatura",
+  hum:  "humedad",
+  pres: "presion",
+  air:  "pm1",
+  co2:  "co2",
+  tvoc: "tvoc"
+};
+
 // Valores actuales de los sensores (se actualizan con WebSocket)
 let valores = {
   temperatura: 20,
@@ -345,7 +354,7 @@ function setSetpoint(type) {
     temp: "Temperatura (°C)",
     hum: "Humedad (%)",
     pres: "Presión (hPa)",
-    air: "Calidad del aire (ppm)",
+    air: "Calidad del aire (µg/m³.)",
     co2: "Dióxido de Carbono (ppm)",
     tvoc: "Compuestos Orgánicos Volátiles (ppb)"
 
@@ -368,11 +377,30 @@ function guardarSetpoint() {
     return;
   }
 
-  setpoints[setpointActual].min = parseFloat(min);
-  setpoints[setpointActual].max = parseFloat(max);
+  const minNum = parseFloat(min);
+  const maxNum = parseFloat(max);
+
+  setpoints[setpointActual].min = minNum;
+  setpoints[setpointActual].max = maxNum;
+
+  // ✅ ENVIAR A NODE-RED → MQTT → PLACA
+  const payload = {
+    type: "setpoint",
+    target: targetMap[setpointActual],
+    min: minNum,
+    max: maxNum
+  };
+
+  if (socket && socket.readyState === WebSocket.OPEN) {
+    socket.send(JSON.stringify(payload));
+    console.log("Setpoint enviado:", payload);
+  } else {
+    console.error("WebSocket no listo para enviar setpoint.");
+  }
 
   cerrarSetpoint();
 }
+
 
 function cerrarSetpoint() {
   document.getElementById("setpointBox").style.display = "none";
@@ -516,31 +544,15 @@ socket.onmessage = function(event) {
   try {
     var data = JSON.parse(event.data);
 
-    // Mapeo JSON -> objeto valores
-    if (typeof data.temperatura === 'number') {
-      valores.temperatura = data.temperatura;
-    }
-    if (typeof data.humedad === 'number') {
-      valores.humedad = data.humedad;
-    }
-    if (typeof data.presion === 'number') {
-      valores.presion = data.presion;
-    }
-    if (typeof data.pm1 === 'number') {
-      valores.calidad = data.pm1; // calidad del aire basada en pm1
-    }
+    if (typeof data.temperatura === 'number') valores.temperatura = data.temperatura;
+    if (typeof data.humedad === 'number')     valores.humedad = data.humedad;
+    if (typeof data.presion === 'number')     valores.presion = data.presion;
+    if (typeof data.pm1 === 'number')         valores.calidad = data.pm1;
 
-    // Cuando empieces a mandarlos:
-    if (typeof data.co2 === 'number') {
-      valores.co2 = data.co2;
-    }
-    if (typeof data.tvoc === 'number') {
-      valores.tvoc = data.tvoc;
-    }
+    if (typeof data.co2 === 'number')  valores.co2 = data.co2;
+    if (typeof data.tvoc === 'number') valores.tvoc = data.tvoc;
 
-    // Actualiza gauges y alarmas con los datos reales
     actualizarGaugesDesdeValores();
-
   } catch (e) {
     console.error("Error parseando mensaje WebSocket:", e, event.data);
   }
@@ -610,6 +622,13 @@ Swal.fire({
     confirmButtonText: "Aceptar"
 });
 </script>
+<button onclick="abrirSetpoint('temperatura')">Setpoint temperatura</button>
+<button onclick="abrirSetpoint('humedad')">Setpoint humedad</button>
+<button onclick="abrirSetpoint('presion')">Setpoint presión</button>
+<button onclick="abrirSetpoint('co2')">Setpoint CO₂</button>
+<button onclick="abrirSetpoint('tvoc')">Setpoint TVOC</button>
+<button onclick="abrirSetpoint('pm1')">Setpoint PM1</button>
+
 <?php endif; ?>
 </body>
 </html>

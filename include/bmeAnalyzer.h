@@ -1,11 +1,6 @@
-#ifndef INCLUDE_BMEANALYZER_H
-#define INCLUDE_BMEANALYZER_H
+#pragma once
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BME280.h>
-
-// ===== SENSORS PINS =====
-#define BME_SCL D1    // Purple jumper
-#define BME_SDA D2    // Blue jumper
 
 // ===== Presion de hermosillo =====
 #define SEALEVELPRESSURE_HPA (1010.80) 
@@ -67,11 +62,3 @@ class BMEReader {
     const BMEData& getData() const {return data;}
     const bool& getStatus() const {return data.isValidRead; }
 };
-
-
-
-
-
-
-
-#endif

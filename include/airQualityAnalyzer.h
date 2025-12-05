@@ -1,6 +1,4 @@
-#ifndef INCLUDE_AIRQUALITYANALYZER_H
-#define INCLUDE_AIRQUALITYANALYZER_H
-
+#pragma once
 #include <Arduino.h>      // Para Serial, String, boolean
 #include <stdint.h>
 #include "PMS5003.h"      // define struct pms5003data y readPMSdata(Stream *s)
@@ -10,8 +8,6 @@
 // =====================
 // Convención: PMS_RX = pin donde el ESP *RECIBE* (va al TXD del sensor)
 //             PMS_TX = pin donde el ESP *ENVÍA*  (va al RXD del sensor)
-#define PMS_RX D5   // conectado a TXD del PMS
-#define PMS_TX D6   // conectado a RXD del PMS
 
 // =====================
 //   AIR QUALITY THRESHOLDS
@@ -96,4 +92,3 @@ public:
     const bool&    getStatus() const    { return dataLocal.isValidRead; }
 };
 
-#endif // INCLUDE_AIRQUALITYANALYZER_H
