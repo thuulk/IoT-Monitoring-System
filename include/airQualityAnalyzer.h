@@ -33,6 +33,8 @@ struct PMSData {
 
     // ==== PM en µg/m³ ====
     uint16_t pm1         = 0;  // PM <= 1.0 µm (mapeado desde pm10_env del PMS5003)
+    uint16_t pm25       = 0;
+    uint16_t pm10       = 0;
 };
 
 // El .h de PMS5003 define un *global*:
@@ -71,6 +73,8 @@ public:
         //
         // Aquí solo exponemos PM1.0 como ejemplo.
         dataLocal.pm1 = ::data.pm10_env;  // PM1.0 ambiental
+        dataLocal.pm25 = ::data.pm25_env;
+        dataLocal.pm10 = ::data.pm100_env;
 
 
         dataLocal.isValidRead = true;
@@ -83,7 +87,9 @@ public:
             return String("PMS: lectura NO válida");
         }
 
-        String s = "PM1: " + String(dataLocal.pm1) + " ug/m3";
+        String s = "PM1: " + String(dataLocal.pm1) + " ug/m3, ";
+        s += "PM2.5: " + String(dataLocal.pm25) + " ug/m3, ";
+        s += "PM10: " + String(dataLocal.pm25) + " ug/m3, ";
         return s;
     }
 

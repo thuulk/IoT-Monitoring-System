@@ -111,7 +111,7 @@ void loop() {
   digitalWrite(pins::BUZZER, alarmOn ? HIGH : LOW);
   // serial monitor 
   //Serial.println(bme.toString());
-  //Serial.println(pms.toString());
+  Serial.println(pms.toString());
   Serial.println(ccs.toString());
 
 
