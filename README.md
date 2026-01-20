@@ -6,7 +6,7 @@ The system was developed as a **functional prototype** focused on **vaccine cold
 
 ---
 
-## 🧠 Project Motivation
+## Project Motivation
 
 Failures in cold-chain logistics are a major cause of vaccine waste worldwide. Studies estimate that up to **30% of vaccines are lost** due to improper temperature control, directly impacting public health and increasing operational costs.
 
@@ -14,7 +14,7 @@ This project aims to provide a **cost-effective, scalable, and easy-to-use monit
 
 ---
 
-## 🎯 Project Objectives
+## Project Objectives
 
 - Develop an IoT prototype capable of measuring:
   - Temperature
@@ -31,7 +31,7 @@ This project aims to provide a **cost-effective, scalable, and easy-to-use monit
 
 ---
 
-## 🔧 System Architecture Overview
+## System Architecture Overview
 
 ### 1️⃣ IoT Device Layer
 - **ESP8266 microcontroller**
@@ -68,18 +68,18 @@ This project aims to provide a **cost-effective, scalable, and easy-to-use monit
 
 ---
 
-## 🌐 Web Platform Features
+## Web Platform Features
 
-- 🔐 User authentication and access control
-- 📊 Real-time sensor data visualization (≤ 3s delay)
-- 🚨 Visual alerts when conditions exceed setpoints
-- 📈 Historical data records with date-based filtering
-- 📱 Responsive UI for multiple devices
-- 🎨 Intuitive interface designed for non-technical medical staff
+- User authentication and access control
+- Real-time sensor data visualization (≤ 3s delay)
+- Visual alerts when conditions exceed setpoints
+- Historical data records with date-based filtering
+- Responsive UI for multiple devices
+- Intuitive interface designed for non-technical medical staff
 
 ---
 
-## 🚨 Alerting System
+## Alerting System
 
 - **Local alerts** via buzzer when critical conditions are detected
 - **Remote alerts** sent to mobile devices using **N8N**
@@ -87,7 +87,7 @@ This project aims to provide a **cost-effective, scalable, and easy-to-use monit
 
 ---
 
-## 🧠 Technologies Used
+## Technologies Used
 
 ### Programming & Firmware
 - C++
@@ -110,7 +110,7 @@ This project aims to provide a **cost-effective, scalable, and easy-to-use monit
 
 ---
 
-## 📊 Use Cases
+## Use Cases
 
 - Vaccine cold-chain monitoring
 - Pharmaceutical storage supervision
@@ -129,7 +129,7 @@ This project was awarded third place for its innovation, real-world applicabilit
 
 ---
 
-## 📌 Project Status
+## Project Status
 
 ✅ Fully functional end-to-end prototype  
 ✅ Real-time data acquisition and visualization  
